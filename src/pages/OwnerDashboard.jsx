@@ -15,6 +15,7 @@ import FloorComparisonChart from "../components/charts/FloorComparisonChart";
 import WasteBreakdownChart from "../components/charts/WasteBreakdownChart";
 import AlertsOverviewChart from "../components/charts/AlertsOverviewChart";
 import SimpleTable from "../components/common/SimpleTable";
+import ChatbotPanel from "../components/chatbot/ChatbotPanel";
 
 export default function OwnerDashboard() {
   const { setActiveView, filters, updateFilter, selectedChart, setSelectedChart } =
@@ -25,10 +26,7 @@ export default function OwnerDashboard() {
   const [energyTrend, setEnergyTrend] = useState([]);
   const [floorComparison, setFloorComparison] = useState([]);
   const [wasteAnalysis, setWasteAnalysis] = useState({ summary: [], topWasteRooms: [] });
-  const [alertsOverview, setAlertsOverview] = useState({
-    priorityBreakdown: [],
-    recentCriticalRooms: [],
-  });
+  const [alertsOverview, setAlertsOverview] = useState({ priorityBreakdown: [], recentCriticalRooms: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -104,48 +102,53 @@ export default function OwnerDashboard() {
             <KPIBox title="High Waste Records" value={summary?.highWasteRecords ?? 0} />
           </div>
 
-          <div className="owner-grid-2">
-            <div
-              className={`panel-card ${selectedChart === "energy_trend" ? "is-selected" : ""}`.trim()}
-              onClick={() => setSelectedChart("energy_trend")}
-            >
-              <h3>Energy Trend</h3>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "2fr 1.2fr",
+              gap: "20px",
+              marginBottom: "24px",
+            }}
+          >
+            <div style={cardStyle}>
+              <h3 style={cardTitle}>Energy Trend</h3>
               <EnergyTrendChart data={energyTrend} />
             </div>
 
-            <div
-              className={`panel-card ${selectedChart === "floor_comparison" ? "is-selected" : ""}`.trim()}
-              onClick={() => setSelectedChart("floor_comparison")}
-            >
-              <h3>Floor Comparison</h3>
+            <div style={cardStyle}>
+              <h3 style={cardTitle}>Floor Comparison</h3>
               <FloorComparisonChart data={floorComparison} />
             </div>
           </div>
 
-          <div className="owner-grid-even">
-            <div
-              className={`panel-card ${selectedChart === "waste_breakdown" ? "is-selected" : ""}`.trim()}
-              onClick={() => setSelectedChart("waste_breakdown")}
-            >
-              <h3>Waste Breakdown</h3>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1.2fr 1.2fr",
+              gap: "20px",
+              marginBottom: "24px",
+            }}
+          >
+            <div style={cardStyle}>
+              <h3 style={cardTitle}>Waste Breakdown</h3>
               <WasteBreakdownChart data={wasteAnalysis.summary || []} />
             </div>
 
-            <div
-              className={`panel-card ${selectedChart === "alerts_overview" ? "is-selected" : ""}`.trim()}
-              onClick={() => setSelectedChart("alerts_overview")}
-            >
-              <h3>Alert Priority Overview</h3>
+            <div style={cardStyle}>
+              <h3 style={cardTitle}>Alert Priority Overview</h3>
               <AlertsOverviewChart data={alertsOverview.priorityBreakdown || []} />
             </div>
           </div>
 
-          <div className="owner-grid-even">
-            <div
-              className={`panel-card ${selectedChart === "top_waste_rooms" ? "is-selected" : ""}`.trim()}
-              onClick={() => setSelectedChart("top_waste_rooms")}
-            >
-              <h3>Top Waste Rooms</h3>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "20px",
+            }}
+          >
+            <div style={cardStyle}>
+              <h3 style={cardTitle}>Top Waste Rooms</h3>
               <SimpleTable
                 columns={[
                   { key: "room_id", label: "Room" },
@@ -156,11 +159,8 @@ export default function OwnerDashboard() {
               />
             </div>
 
-            <div
-              className={`panel-card ${selectedChart === "critical_rooms" ? "is-selected" : ""}`.trim()}
-              onClick={() => setSelectedChart("critical_rooms")}
-            >
-              <h3>Recent Critical Rooms</h3>
+            <div style={cardStyle}>
+              <h3 style={cardTitle}>Recent Critical Rooms</h3>
               <SimpleTable
                 columns={[
                   { key: "room_id", label: "Room" },
@@ -174,8 +174,24 @@ export default function OwnerDashboard() {
               />
             </div>
           </div>
+
+          <div style={{ marginTop: "24px" }}>
+            <ChatbotPanel filters={filters} activeView="owner_dashboard" />
+          </div>
         </>
       )}
     </section>
   );
 }
+
+const cardStyle = {
+  border: "1px solid #334155",
+  borderRadius: "12px",
+  padding: "16px",
+  background: "#0f172a",
+};
+
+const cardTitle = {
+  marginTop: 0,
+  marginBottom: "12px",
+};

@@ -1,55 +1,43 @@
 import { useState } from "react";
-import { askChatbot, suggestInsights, explainChart } from "../../api/chatbotApi";
+import { askChatbot, suggestInsights } from "../../api/chatbotApi";
 
-const suggestedQuestions = [
-  "Which rooms have the highest waste risk?",
-  "Explain the energy trend",
-  "What should the owner focus on next?",
-];
-
-export default function ChatbotPanel({ filters, activeView, selectedChart }) {
+export default function ChatbotPanel({ filters, activeView }) {
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      content:
-        "Ask about trends, waste, alerts, comparisons, or decision support. I can also explain the current chart.",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const appendMessage = (message) => {
-    setMessages((prev) => [...prev, message]);
-  };
+  const handleAsk = async () => {
+    if (!question.trim()) return;
 
-  const handleAsk = async (customQuestion = null) => {
-    const q = (customQuestion ?? question).trim();
-    if (!q) return;
-
-    appendMessage({ role: "user", content: q });
+    const userMessage = { role: "user", content: question };
+    setMessages((prev) => [...prev, userMessage]);
     setLoading(true);
 
     try {
       const res = await askChatbot({
-        question: q,
+        question,
         filters,
         chartContext: {
           activeView,
-          selectedChart,
         },
       });
 
-      appendMessage({
-        role: "assistant",
-        content: res.data.answer,
-      });
-
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: res.data.answer,
+        },
+      ]);
       setQuestion("");
     } catch (error) {
-      appendMessage({
-        role: "assistant",
-        content: "I couldn't generate an answer right now.",
-      });
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Failed to get response from chatbot.",
+        },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -57,59 +45,24 @@ export default function ChatbotPanel({ filters, activeView, selectedChart }) {
 
   const handleSuggestInsights = async () => {
     setLoading(true);
-
     try {
-      const res = await suggestInsights({
-        filters,
-        chartContext: {
-          activeView,
-          selectedChart,
+      const res = await suggestInsights({ filters });
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: res.data.answer,
         },
-      });
-
-      appendMessage({
-        role: "assistant",
-        content: res.data.answer,
-      });
+      ]);
     } catch (error) {
-      appendMessage({
-        role: "assistant",
-        content: "I couldn't generate insights right now.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleExplainChart = async () => {
-    if (!selectedChart) {
-      appendMessage({
-        role: "assistant",
-        content: "No chart is selected right now. Select a chart first.",
-      });
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const res = await explainChart({
-        filters,
-        chartContext: {
-          activeView,
-          selectedChart,
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Failed to generate insights.",
         },
-      });
-
-      appendMessage({
-        role: "assistant",
-        content: res.data.answer,
-      });
-    } catch (error) {
-      appendMessage({
-        role: "assistant",
-        content: "I couldn't explain the current chart right now.",
-      });
+      ]);
     } finally {
       setLoading(false);
     }
@@ -122,31 +75,12 @@ export default function ChatbotPanel({ filters, activeView, selectedChart }) {
         borderRadius: "12px",
         background: "#0f172a",
         padding: "16px",
+        height: "500px",
         display: "flex",
         flexDirection: "column",
-        minHeight: "560px",
       }}
     >
-      <h3 style={{ marginTop: 0, marginBottom: "12px" }}>Analytics Assistant</h3>
-
-      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "12px" }}>
-        {suggestedQuestions.map((item) => (
-          <button
-            key={item}
-            onClick={() => handleAsk(item)}
-            style={{
-              padding: "8px 12px",
-              borderRadius: "999px",
-              border: "1px solid #334155",
-              background: "#1e293b",
-              color: "#fff",
-              cursor: "pointer",
-            }}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
+      <h3 style={{ marginTop: 0 }}>Analytics Assistant</h3>
 
       <div
         style={{
@@ -155,45 +89,52 @@ export default function ChatbotPanel({ filters, activeView, selectedChart }) {
           marginBottom: "12px",
           border: "1px solid #1e293b",
           borderRadius: "8px",
-          padding: "12px",
-          background: "#0b1220",
+          padding: "10px",
         }}
       >
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            style={{
-              marginBottom: "12px",
-              textAlign: msg.role === "user" ? "right" : "left",
-            }}
-          >
+        {messages.length === 0 ? (
+          <p style={{ color: "#94a3b8" }}>
+            Ask about energy usage, alerts, waste patterns, or request insights.
+          </p>
+        ) : (
+          messages.map((msg, index) => (
             <div
+              key={index}
               style={{
-                display: "inline-block",
-                padding: "10px 12px",
-                borderRadius: "10px",
-                background: msg.role === "user" ? "#2563eb" : "#1e293b",
-                color: "#fff",
-                maxWidth: "90%",
-                whiteSpace: "pre-wrap",
-                lineHeight: 1.5,
+                marginBottom: "10px",
+                textAlign: msg.role === "user" ? "right" : "left",
               }}
             >
-              {msg.content}
+              <div
+                style={{
+                  display: "inline-block",
+                  padding: "10px 12px",
+                  borderRadius: "10px",
+                  background: msg.role === "user" ? "#1d4ed8" : "#1e293b",
+                  color: "#fff",
+                  maxWidth: "85%",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {msg.content}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
-      <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
-        <button onClick={handleSuggestInsights} disabled={loading} style={actionButtonStyle}>
-          Suggest Insights
-        </button>
-
-        <button onClick={handleExplainChart} disabled={loading} style={actionButtonStyle}>
-          Explain Current Chart
-        </button>
-      </div>
+      <button
+        onClick={handleSuggestInsights}
+        style={{
+          marginBottom: "10px",
+          padding: "10px",
+          borderRadius: "8px",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        Suggest Insights
+      </button>
 
       <div style={{ display: "flex", gap: "8px" }}>
         <input
@@ -209,21 +150,15 @@ export default function ChatbotPanel({ filters, activeView, selectedChart }) {
             background: "#020617",
             color: "#fff",
           }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleAsk();
-          }}
         />
         <button
-          onClick={() => handleAsk()}
+          onClick={handleAsk}
           disabled={loading}
           style={{
-            padding: "10px 16px",
+            padding: "10px 14px",
             borderRadius: "8px",
             border: "none",
-            background: "#e5e7eb",
-            color: "#111827",
             cursor: "pointer",
-            fontWeight: 600,
           }}
         >
           {loading ? "..." : "Send"}
@@ -232,13 +167,3 @@ export default function ChatbotPanel({ filters, activeView, selectedChart }) {
     </div>
   );
 }
-
-const actionButtonStyle = {
-  flex: 1,
-  padding: "10px",
-  borderRadius: "8px",
-  border: "1px solid #334155",
-  background: "#1e293b",
-  color: "#fff",
-  cursor: "pointer",
-};

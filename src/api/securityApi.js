@@ -5,22 +5,17 @@ export const getSecuritySummary = async (params = {}) => {
   return res.data;
 };
 
-export const getSecurityEnergyTrend = async (params = {}) => {
-  const res = await api.get("/security/energy-trend", { params });
+export const getSecurityIncidentsTrend = async (params = {}) => {
+  const res = await api.get("/security/incidents-trend", { params });
   return res.data;
 };
 
-export const getSecurityFloorComparison = async (params = {}) => {
-  const res = await api.get("/security/floor-comparison", { params });
+export const getSecurityHighRiskRooms = async (params = {}) => {
+  const res = await api.get("/security/high-risk-rooms", { params });
   return res.data;
 };
 
-export const getSecurityWasteAnalysis = async (params = {}) => {
-  const res = await api.get("/security/waste-analysis", { params });
-  return res.data;
-};
-
-export const getSecurityAlertsOverview = async (params = {}) => {
-  const res = await api.get("/security/alerts-overview", { params });
+export const getSecurityAlertTimeline = async (params = {}) => {
+  const res = await api.get("/security/alert-timeline", { params });
   return res.data;
 };

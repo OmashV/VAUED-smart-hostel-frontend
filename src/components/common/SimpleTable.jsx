@@ -1,30 +1,41 @@
-﻿export default function SimpleTable({ columns, data }) {
+export default function SimpleTable({ columns, data }) {
   return (
     <div style={{ overflowX: "auto" }}>
-      <table className="data-table">
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
             {columns.map((col) => (
-              <th key={col.key}>{col.label}</th>
+              <th
+                key={col.key}
+                style={{
+                  textAlign: "left",
+                  padding: "10px",
+                  borderBottom: "1px solid #334155",
+                  color: "#cbd5e1",
+                }}
+              >
+                {col.label}
+              </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length} style={{ color: "#5f7394" }}>
-                No data available for the selected filters.
-              </td>
+          {data.map((row, idx) => (
+            <tr key={idx}>
+              {columns.map((col) => (
+                <td
+                  key={col.key}
+                  style={{
+                    padding: "10px",
+                    borderBottom: "1px solid #1e293b",
+                    color: "#f8fafc",
+                  }}
+                >
+                  {row[col.key]}
+                </td>
+              ))}
             </tr>
-          ) : (
-            data.map((row, idx) => (
-              <tr key={idx}>
-                {columns.map((col) => (
-                  <td key={col.key}>{row[col.key]}</td>
-                ))}
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
     </div>
