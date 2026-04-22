@@ -1,37 +1,12 @@
-export default function KPIBox({ title, value }) {
-  return (
-    <div
-      style={{
-        border: "1px solid #334155",
-        borderRadius: "12px",
-        padding: "20px",
-        background: "#0f172a",
-        minHeight: "120px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      <h4
-        style={{
-          margin: 0,
-          fontSize: "18px",
-          color: "#cbd5e1",
-        }}
-      >
-        {title}
-      </h4>
+﻿export default function KPIBox({ title, value }) {
+  const formattedValue =
+    typeof value === "number" ? new Intl.NumberFormat().format(value) : value;
 
-      <p
-        style={{
-          margin: 0,
-          fontSize: "28px",
-          fontWeight: "bold",
-          color: "#f8fafc",
-        }}
-      >
-        {value}
-      </p>
+  return (
+    <div className="kpi-card">
+      <h4>{title}</h4>
+      <p className="kpi-value">{formattedValue}</p>
+      <span className="kpi-chip">Live Metric</span>
     </div>
   );
 }

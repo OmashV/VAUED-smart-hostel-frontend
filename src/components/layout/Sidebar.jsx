@@ -1,40 +1,35 @@
-import { NavLink } from "react-router-dom";
+﻿import { NavLink } from "react-router-dom";
 
-const linkStyle = ({ isActive }) => ({
-  display: "block",
-  padding: "12px 16px",
-  marginBottom: "8px",
-  textDecoration: "none",
-  borderRadius: "10px",
-  background: isActive ? "#dbeafe" : "transparent",
-  color: isActive ? "#0f172a" : "#cbd5e1",
-  fontWeight: isActive ? 700 : 500,
-});
+const navItems = [
+  { to: "/owner", label: "Owner", token: "OW" },
+  { to: "/warden", label: "Warden", token: "WD" },
+  { to: "/security", label: "Security", token: "SC" },
+  { to: "/student", label: "Student", token: "ST" },
+];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onToggle }) {
   return (
-    <aside
-      style={{
-        width: "240px",
-        borderRight: "1px solid #1e293b",
-        padding: "24px 20px",
-        background: "#020617",
-      }}
-    >
-      <h2 style={{ marginTop: 0, color: "#f8fafc" }}>Smart Hostel</h2>
-      <nav style={{ marginTop: "24px" }}>
-        <NavLink to="/owner" style={linkStyle}>
-          Owner
-        </NavLink>
-        <NavLink to="/warden" style={linkStyle}>
-          Warden
-        </NavLink>
-        <NavLink to="/security" style={linkStyle}>
-          Security
-        </NavLink>
-        <NavLink to="/student" style={linkStyle}>
-          Student
-        </NavLink>
+    <aside className={`sidebar ${isOpen ? "" : "sidebar--collapsed"}`.trim()}>
+      <div className="sidebar-top">
+        {isOpen ? <h2 className="sidebar-brand">Smart Hostel</h2> : <span className="sidebar-brand">SH</span>}
+        <button className="sidebar-toggle" onClick={onToggle}>
+          {isOpen ? "<" : ">"}
+        </button>
+      </div>
+
+      {isOpen && <div className="sidebar-badge">Live command center for hostel operations and risk monitoring.</div>}
+
+      <nav className="sidebar-nav">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) => `side-link ${isActive ? "is-active" : ""}`.trim()}
+          >
+            <span className="side-link-token">{isOpen ? item.token : item.label.charAt(0)}</span>
+            {isOpen && item.label}
+          </NavLink>
+        ))}
       </nav>
     </aside>
   );
