@@ -1,16 +1,16 @@
 import api from "./axios";
 
-export const sendChatbotMessage = async (payload) => {
-  const res = await api.post("/chatbot/message", payload);
+export const askChatbot = async (payload) => {
+  const res = await api.post("/chatbot/ask", payload);
   return res.data;
 };
 
-export const getChatbotSuggestedPrompts = async () => {
-  const res = await api.get("/chatbot/suggested-prompts");
+export const explainChart = async (payload) => {
+  const res = await api.post("/chatbot/explain-chart", payload);
   return res.data;
 };
 
-export const getChatbotHistory = async (params = {}) => {
-  const res = await api.get("/chatbot/history", { params });
+export const suggestInsights = async (payload) => {
+  const res = await api.post("/chatbot/suggest-insights", payload);
   return res.data;
 };

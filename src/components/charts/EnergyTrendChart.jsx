@@ -1,4 +1,4 @@
-import {
+﻿import {
   ResponsiveContainer,
   LineChart,
   Line,
@@ -18,11 +18,24 @@ export default function EnergyTrendChart({ data }) {
     <div style={{ width: "100%", height: 320 }}>
       <ResponsiveContainer>
         <LineChart data={formattedData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="totalEnergyUsage" strokeWidth={2} />
+          <CartesianGrid stroke="#d7e3f4" strokeDasharray="4 4" />
+          <XAxis dataKey="date" tick={{ fill: "#587093", fontSize: 12 }} />
+          <YAxis tick={{ fill: "#587093", fontSize: 12 }} />
+          <Tooltip
+            contentStyle={{
+              borderRadius: 12,
+              border: "1px solid #d6e0ee",
+              boxShadow: "0 10px 28px rgba(16, 33, 61, 0.1)",
+            }}
+          />
+          <Line
+            type="monotone"
+            dataKey="totalEnergyUsage"
+            stroke="#1d5ed8"
+            strokeWidth={3}
+            dot={{ r: 3, fill: "#1d5ed8" }}
+            activeDot={{ r: 6 }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
